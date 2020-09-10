@@ -8,21 +8,35 @@ function* read() {
   return name;
 }
 
-// const it = read();
-// const { value, done } = it.next();
-// value.then((data) => {
-//   console.log("data1", data);
+function co(iterator) {
+  const ctx = this;
+  return new Promise((resolve, reject) => {
+    // 如果传入的还是 generator 函数，先执行得到迭代器
+    if (typeof iterator === 'function') iterator = iterator.call(ctx);
 
-//   const { value, done } = it.next(data);
-//   value.then((data) => {
-//     console.log("data2", data);
+    function next(data) {
+      const { value, done } = iterator.next(data);
 
-//     const { value, done } = it.next(data);
-//     console.log("data3", value, done);
-//   });
-// });
-const co = require('co');
+      if (done) {
+        return resolve(value);
+      }
 
-co(read()).then(data=>{
-  console.log('data', data)
+      // 可能yield返回的是基本值而不是promise，所以用Promise.resolve包装
+      Promise.resolve(value).then(data => {
+          next(data);
+        },err => {
+          reject(err);
+        }
+      );
+
+      // Promise.resolve(value).then(next,reject) // 可以简写为
+    }
+    next();
+  });
+}
+
+co(read()).then(data => {
+  console.log("data", data);
+}).catch((err) => {
+  console.log("err", err);
 });
