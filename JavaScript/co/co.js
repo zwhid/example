@@ -8,16 +8,21 @@ function* read() {
   return name;
 }
 
-const it = read();
-const { value, done } = it.next();
-value.then((data) => {
-  console.log("data1", data);
+// const it = read();
+// const { value, done } = it.next();
+// value.then((data) => {
+//   console.log("data1", data);
 
-  const { value, done } = it.next(data);
-  value.then((data) => {
-    console.log("data2", data);
+//   const { value, done } = it.next(data);
+//   value.then((data) => {
+//     console.log("data2", data);
 
-    const { value, done } = it.next(data);
-    console.log("data3", value, done);
-  });
+//     const { value, done } = it.next(data);
+//     console.log("data3", value, done);
+//   });
+// });
+const co = require('co');
+
+co(read()).then(data=>{
+  console.log('data', data)
 });
