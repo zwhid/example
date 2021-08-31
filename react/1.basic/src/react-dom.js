@@ -60,7 +60,11 @@ function createDOM(vdom) { // 创建真实dom
   if (type === REACT_TEXT) { // 元素是一个文本
     dom = document.createTextNode(props.content)
   } else if (typeof type === 'function') {
-    return mountFunctionComponent(vdom)
+    if (type.isReactComponent) {
+      return mountClassComponent(vdom)
+    } else {
+      return mountFunctionComponent(vdom)
+    }
   } else {
     dom = document.createElement(type) // div p span
   }
@@ -80,6 +84,13 @@ function createDOM(vdom) { // 创建真实dom
   return dom
 }
 
+function mountClassComponent(vdom) { // 处理类组件
+  let { type: ClassComponent, props } = vdom
+  let classInstance = new ClassComponent(props) // nwe类组件，返回实例
+  let renderVdom = classInstance.render() // 运行render函数返回html=>babel自动转成jsx=>react.createElement转成vdom
+  vdom.oldRenderVdom = renderVdom
+  return createDOM(renderVdom)
+}
 function mountFunctionComponent(vdom) { // 处理函数组件
   let { type, props } = vdom
   let renderVdom = type(props) // 运行函数，返回html=>babel自动转成jsx=>react.createElement转成vdom

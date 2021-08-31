@@ -68,8 +68,16 @@ function createElement(type, config, children) {
   return { type, ref, key, props }
 }
 
+class Component {
+  static isReactComponent = true // 类也是函数，后面为了判断类组件和函数组件，这里加一个静态属性
+  constructor(props) {
+    this.props = props
+  }
+}
+
 const React = {
-  createElement
+  createElement,
+  Component
 }
 
 export default React
