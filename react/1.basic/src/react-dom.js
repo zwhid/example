@@ -111,6 +111,8 @@ function updateProps(dom, oldProps, newProps) { // 把属性挂载到dom中
       for (const arrt in styleObj) {
         dom.style[arrt] = styleObj[arrt]
       }
+    } else if (key.startsWith('on')) {
+      dom[key.toLocaleLowerCase()] = newProps[key] // 事件绑定，onClick转成onclick。保存原来的值
     } else {
       dom[key] = newProps[key] // className id title
     }

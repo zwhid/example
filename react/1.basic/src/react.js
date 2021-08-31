@@ -47,7 +47,9 @@ let element2 =
 
 */
 
-import { wrapToVdom } from "./utils"
+import { wrapToVdom } from './utils'
+import Component from './Component'
+
 function createElement(type, config, children) {
   let ref
   let key
@@ -68,12 +70,7 @@ function createElement(type, config, children) {
   return { type, ref, key, props }
 }
 
-class Component {
-  static isReactComponent = true // 类也是函数，后面为了判断类组件和函数组件，这里加一个静态属性
-  constructor(props) {
-    this.props = props
-  }
-}
+
 
 const React = {
   createElement,
