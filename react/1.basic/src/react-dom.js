@@ -53,12 +53,14 @@ function mount(vdom, parentDOM) {
   }
 }
 
-function createDOM(vdom) {
+function createDOM(vdom) { // 创建真实dom
   if (!vdom) return null
   let { type, props } = vdom
   let dom
   if (type === REACT_TEXT) { // 元素是一个文本
     dom = document.createTextNode(props.content)
+  } else if (typeof type === 'function') {
+    return mountFunctionComponent(vdom)
   } else {
     dom = document.createElement(type) // div p span
   }
@@ -78,11 +80,18 @@ function createDOM(vdom) {
   return dom
 }
 
-function reconcileChildren(childrenVdom, parentDOM) {
+function mountFunctionComponent(vdom) { // 处理函数组件
+  let { type, props } = vdom
+  let renderVdom = type(props) // 运行函数，返回html=>babel自动转成jsx=>react.createElement转成vdom
+  vdom.oldRenderVdom = renderVdom
+  return createDOM(renderVdom)
+}
+
+function reconcileChildren(childrenVdom, parentDOM) { // 处理props.children
   childrenVdom.forEach(childVdom => mount(childVdom, parentDOM))
 }
 
-function updateProps(dom, oldProps, newProps) {
+function updateProps(dom, oldProps, newProps) { // 把属性挂载到dom中
   for (const key in newProps) {
     if (key === 'children') { // children有另外的处理
       continue
