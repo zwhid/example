@@ -53,7 +53,7 @@ function mount(vdom, parentDOM) {
   }
 }
 
-function createDOM(vdom) { // 创建真实dom
+export function createDOM(vdom) { // 创建真实dom
   if (!vdom) return null
   let { type, props } = vdom
   let dom
@@ -80,7 +80,7 @@ function createDOM(vdom) { // 创建真实dom
       }
     }
   }
-
+  vdom.dom = dom // 在vdom上挂载对应的真实dom
   return dom
 }
 
@@ -88,7 +88,7 @@ function mountClassComponent(vdom) { // 处理类组件
   let { type: ClassComponent, props } = vdom
   let classInstance = new ClassComponent(props) // nwe类组件，返回实例
   let renderVdom = classInstance.render() // 运行render函数返回html=>babel自动转成jsx=>react.createElement转成vdom
-  vdom.oldRenderVdom = renderVdom
+  classInstance.oldRenderVdom = vdom.oldRenderVdom = renderVdom
   return createDOM(renderVdom)
 }
 function mountFunctionComponent(vdom) { // 处理函数组件
@@ -116,6 +116,14 @@ function updateProps(dom, oldProps, newProps) { // 把属性挂载到dom中
     } else {
       dom[key] = newProps[key] // className id title
     }
+  }
+}
+
+export function findDOM(vdom) {
+  if (vdom.dom) { // 只有jsx里面才有dom属性，类组件、函数组件身上没有dom属性，需要递归到最后一层的jsx
+    return vdom.dom
+  } else {
+    return findDOM(vdom.oldRenderVdom)
   }
 }
 

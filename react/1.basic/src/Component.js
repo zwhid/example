@@ -1,3 +1,5 @@
+import { createDOM, findDOM } from "./react-dom"
+
 class Updater {
   constructor(classInstance) {
     this.classInstance = classInstance // 组件实例
@@ -43,7 +45,14 @@ class Component {
     this.Updater.addState(partialState)
   }
   forceUpdate() {
-    console.log('forceUpdate')
+    let oldRenderVdom = this.oldRenderVdom // 类组件render()返回的老虚拟dom
+    let oldDOM = findDOM(oldRenderVdom) // 虚拟dom上挂载的真实dom
+
+    let newRenderVdom = this.render() // 基于新的属性和状态，计算新的虚拟dom
+    let newDOM = createDOM(newRenderVdom) // 生成新的真实dom
+
+    oldDOM.parentNode.replaceChild(newDOM, oldDOM) // 把老真实dom替换为新真实dom
+    this.oldRenderVdom = newRenderVdom // 更新上一次的虚拟dom
   }
 }
 
