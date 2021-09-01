@@ -127,6 +127,7 @@ export function findDOM(vdom) {
   }
 }
 
+
 // dom-diff，比较新旧虚拟dom的差异，把差异同步到真实dom上
 export function compareTwoVdom(parentDOM, oldVdom, newVdom) {
   let oldDOM = findDOM(oldVdom) // 虚拟dom上挂载的真实dom

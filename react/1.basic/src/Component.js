@@ -45,6 +45,7 @@ class Component {
     this.Updater.addState(partialState)
   }
   forceUpdate() {
+
     let oldRenderVdom = this.oldRenderVdom // 类组件render()返回的旧虚拟dom
     let oldDOM = findDOM(oldRenderVdom) // 虚拟dom上挂载的真实dom
 
