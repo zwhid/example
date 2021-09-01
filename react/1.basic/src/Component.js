@@ -1,5 +1,17 @@
 import { compareTwoVdom, findDOM } from "./react-dom"
 
+export let updateQueue = { // 点击后的更新器队列
+  isBatchingUpdate: false,
+  updaters: [],
+  batchUpdate() {
+    for (let updater of updateQueue.updaters) {
+      updater.updateComponent() // 执行更新器的更新状态
+    }
+    updateQueue.updaters.length = 0
+    updateQueue.isBatchingUpdate = false
+  }
+}
+
 class Updater {
   constructor(classInstance) {
     this.classInstance = classInstance // 组件实例
@@ -10,11 +22,16 @@ class Updater {
     this.emitUpdate() // 触发更新
   }
   emitUpdate() {
-    this.updateComponent()
+    if (updateQueue.isBatchingUpdate) { // 批量异步更新
+      updateQueue.updaters.push(this) // 把更新器实例添加到队列
+    } else {
+      this.updateComponent() // 直接更新。如在setTimeout中，不在react控制范围，react只是触发函数
+    }
   }
   updateComponent() {
+    debugger
     const { classInstance, pendingStates } = this
-    if (pendingStates.length > 0) {
+    if (pendingStates.length > 0) { // 异步更新一次就能跑完pendingStates
       shouldUpdate(classInstance, this.getState())
     }
   }
@@ -22,6 +39,9 @@ class Updater {
     const { classInstance, pendingStates } = this
     let { state } = classInstance // 组件实例的state
     pendingStates.forEach(pendingState => {
+      if (typeof pendingState === 'function') { // setState可能是一个回调函数
+        pendingState = pendingState(state)
+      }
       state = { ...state, ...pendingState }
     })
     pendingStates.length = 0

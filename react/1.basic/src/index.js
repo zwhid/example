@@ -10,11 +10,18 @@ class Counter extends React.Component {
       name: 'zwh'
     }
   }
-  handleClick = (event) => {
+  handleClick = (syntheticEvent) => {
     this.setState({ number: this.state.number + 1 })
     console.log(this.state)
     this.setState({ number: this.state.number + 1 })
     console.log(this.state)
+    setTimeout(() => {
+      this.setState({ number: this.state.number + 1 })
+      console.log(this.state)
+      this.setState({ number: this.state.number + 1 })
+      console.log(this.state)
+    })
+    console.log(syntheticEvent)
   }
   render() {
     return (
