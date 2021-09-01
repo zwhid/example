@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { compareTwoVdom, findDOM } from "./react-dom"
+=======
+import { createDOM, findDOM } from "./react-dom"
+>>>>>>> 890c3c9718d7710b08ea6a80af811df32b57bed1
 
 class Updater {
   constructor(classInstance) {
@@ -45,12 +49,22 @@ class Component {
     this.Updater.addState(partialState)
   }
   forceUpdate() {
+<<<<<<< HEAD
     let oldRenderVdom = this.oldRenderVdom // 类组件render()返回的旧虚拟dom
     let oldDOM = findDOM(oldRenderVdom) // 虚拟dom上挂载的真实dom
 
     let newRenderVdom = this.render() // 基于新的属性和状态，计算新的虚拟dom
     compareTwoVdom(oldDOM.parentNode, oldRenderVdom, newRenderVdom) // 比较新旧虚拟dom，dom-diff
 
+=======
+    let oldRenderVdom = this.oldRenderVdom // 类组件render()返回的老虚拟dom
+    let oldDOM = findDOM(oldRenderVdom) // 虚拟dom上挂载的真实dom
+
+    let newRenderVdom = this.render() // 基于新的属性和状态，计算新的虚拟dom
+    let newDOM = createDOM(newRenderVdom) // 生成新的真实dom
+
+    oldDOM.parentNode.replaceChild(newDOM, oldDOM) // 把老真实dom替换为新真实dom
+>>>>>>> 890c3c9718d7710b08ea6a80af811df32b57bed1
     this.oldRenderVdom = newRenderVdom // 更新上一次的虚拟dom
   }
 }

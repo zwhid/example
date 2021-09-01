@@ -87,8 +87,13 @@ export function createDOM(vdom) { // 创建真实dom
 function mountClassComponent(vdom) { // 处理类组件
   let { type: ClassComponent, props } = vdom
   let classInstance = new ClassComponent(props) // nwe类组件，返回实例
+<<<<<<< HEAD
   let renderVdom = classInstance.render() // 运行render函数返回jsx=>babel自动转成js=>react.createElement转成vdom
   classInstance.oldRenderVdom = vdom.oldRenderVdom = renderVdom // 可能类组件嵌套函数组件
+=======
+  let renderVdom = classInstance.render() // 运行render函数返回html=>babel自动转成jsx=>react.createElement转成vdom
+  classInstance.oldRenderVdom = vdom.oldRenderVdom = renderVdom
+>>>>>>> 890c3c9718d7710b08ea6a80af811df32b57bed1
   return createDOM(renderVdom)
 }
 function mountFunctionComponent(vdom) { // 处理函数组件
@@ -127,6 +132,7 @@ export function findDOM(vdom) {
   }
 }
 
+<<<<<<< HEAD
 // dom-diff，比较新旧虚拟dom的差异，把差异同步到真实dom上
 export function compareTwoVdom(parentDOM, oldVdom, newVdom) {
   let oldDOM = findDOM(oldVdom) // 虚拟dom上挂载的真实dom
@@ -134,6 +140,8 @@ export function compareTwoVdom(parentDOM, oldVdom, newVdom) {
   parentDOM.replaceChild(newDOM, oldDOM) // 把旧真实dom替换为新真实dom
 }
 
+=======
+>>>>>>> 890c3c9718d7710b08ea6a80af811df32b57bed1
 const ReactDom = {
   render
 }
