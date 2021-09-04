@@ -29,7 +29,6 @@ class Updater {
     }
   }
   updateComponent() {
-    debugger
     const { classInstance, pendingStates } = this
     if (pendingStates.length > 0) { // 异步更新一次就能跑完pendingStates
       shouldUpdate(classInstance, this.getState())

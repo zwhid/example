@@ -56,7 +56,7 @@ function mount(vdom, parentDOM) {
 
 export function createDOM(vdom) { // 创建真实dom
   if (!vdom) return null
-  let { type, props } = vdom
+  let { type, props, ref } = vdom
   let dom
   if (type === REACT_TEXT) { // 元素是一个文本
     dom = document.createTextNode(props.content)
@@ -82,6 +82,7 @@ export function createDOM(vdom) { // 创建真实dom
     }
   }
   vdom.dom = dom // 在vdom上挂载对应的真实dom
+  if (ref) ref.current = dom // 如果有ref属性，就把dom引用挂载在ref.current上
   return dom
 }
 

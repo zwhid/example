@@ -70,11 +70,14 @@ function createElement(type, config, children) {
   return { type, ref, key, props }
 }
 
-
+export function createRef() {
+  return { current: null }
+}
 
 const React = {
   createElement,
-  Component
+  Component,
+  createRef
 }
 
 export default React

@@ -5,29 +5,22 @@ import ReactDom from "./react-dom";
 class Counter extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {
-      number: 1,
-      name: 'zwh'
-    }
+    this.aRef = React.createRef() // { current: null }
+    this.bRef = React.createRef() // { current: null }
+    this.resRef = React.createRef() // { current: null }
   }
-  handleClick = (syntheticEvent) => {
-    this.setState({ number: this.state.number + 1 })
-    console.log(this.state)
-    this.setState({ number: this.state.number + 1 })
-    console.log(this.state)
-    setTimeout(() => {
-      this.setState({ number: this.state.number + 1 })
-      console.log(this.state)
-      this.setState({ number: this.state.number + 1 })
-      console.log(this.state)
-    })
-    console.log(syntheticEvent)
+  handleClick = () => {
+    let a = this.aRef.current.value
+    let b = this.bRef.current.value
+    this.resRef.current.value = a + b
   }
+
   render() {
     return (
       <div>
-        <p>number:{this.state.number}</p>
-        <button onClick={this.handleClick}>按钮</button>
+        <input ref={this.aRef} /> + <input ref={this.bRef} />
+        <button onClick={() => this.handleClick()}>=</button>
+        <input ref={this.resRef} />
       </div>
     )
   }
