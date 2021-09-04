@@ -40,7 +40,7 @@ let element2 =
 
 */
 
-import { REACT_TEXT } from "./constants"
+import { REACT_FORWARD_REF, REACT_TEXT } from "./constants"
 import { addEvent } from "./event"
 
 function render(vdom, container) {
@@ -58,7 +58,9 @@ export function createDOM(vdom) { // 创建真实dom
   if (!vdom) return null
   let { type, props, ref } = vdom
   let dom
-  if (type === REACT_TEXT) { // 元素是一个文本
+  if (type.$$typeof === REACT_FORWARD_REF) {
+    return mountForwardComponent(vdom)
+  } else if (type === REACT_TEXT) { // 元素是一个文本
     dom = document.createTextNode(props.content)
   } else if (typeof type === 'function') {
     if (type.isReactComponent) {
@@ -97,6 +99,13 @@ function mountClassComponent(vdom) { // 处理类组件
 function mountFunctionComponent(vdom) { // 处理函数组件
   let { type, props } = vdom
   let renderVdom = type(props) // 运行函数，返回jsx=>babel自动转成js=>react.createElement转成vdom
+  vdom.oldRenderVdom = renderVdom
+  return createDOM(renderVdom)
+}
+function mountForwardComponent(vdom) {
+  console.log(vdom);
+  let { type, props, ref } = vdom
+  let renderVdom = type.render(props, ref) // TextInput(props, forwardRef) => {}
   vdom.oldRenderVdom = renderVdom
   return createDOM(renderVdom)
 }

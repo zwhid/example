@@ -49,6 +49,7 @@ let element2 =
 
 import { wrapToVdom } from './utils'
 import Component from './Component'
+import { REACT_FORWARD_REF } from './constants'
 
 function createElement(type, config, children) {
   let ref
@@ -70,14 +71,21 @@ function createElement(type, config, children) {
   return { type, ref, key, props }
 }
 
-export function createRef() {
+function createRef() {
   return { current: null }
+}
+function forWardRef(render) {
+  return {
+    $$typeof: REACT_FORWARD_REF,
+    render // 函数组件，TextInput(props, forwardRef)
+  }
 }
 
 const React = {
   createElement,
   Component,
-  createRef
+  createRef,
+  forWardRef,
 }
 
 export default React
