@@ -87,8 +87,9 @@ export function createDOM(vdom) { // 创建真实dom
 }
 
 function mountClassComponent(vdom) { // 处理类组件
-  let { type: ClassComponent, props } = vdom
+  let { type: ClassComponent, props, ref } = vdom
   let classInstance = new ClassComponent(props) // nwe类组件，返回实例
+  if (ref) ref.current = classInstance // 如果类组件有ref属性，就把类组件的引用挂载到ref.current
   let renderVdom = classInstance.render() // 运行render函数返回jsx=>babel自动转成js=>react.createElement转成vdom
   classInstance.oldRenderVdom = vdom.oldRenderVdom = renderVdom // 可能类组件嵌套函数组件
   return createDOM(renderVdom)

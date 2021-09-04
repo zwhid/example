@@ -1,29 +1,36 @@
 import React from "./react";
 import ReactDom from "./react-dom";
 
-
-class Counter extends React.Component {
+class TextInput extends React.Component {
   constructor(props) {
     super(props)
-    this.aRef = React.createRef() // { current: null }
-    this.bRef = React.createRef() // { current: null }
-    this.resRef = React.createRef() // { current: null }
+    this.inputRef = React.createRef()
   }
-  handleClick = () => {
-    let a = this.aRef.current.value
-    let b = this.bRef.current.value
-    this.resRef.current.value = a + b
+  getFocus = () => {
+    this.inputRef.current.focus()
+  }
+  render() {
+    return <input ref={this.inputRef} />
+  }
+}
+
+class Form extends React.Component {
+  constructor(props) {
+    super(props)
+    this.inputRef = React.createRef() // { current: null }
+  }
+  getFocus = () => {
+    this.inputRef.current.getFocus() // { current: TextInput }
   }
 
   render() {
     return (
       <div>
-        <input ref={this.aRef} /> + <input ref={this.bRef} />
-        <button onClick={() => this.handleClick()}>=</button>
-        <input ref={this.resRef} />
+        <TextInput ref={this.inputRef} />
+        <button onClick={this.getFocus}>获取Input焦点</button>
       </div>
     )
   }
 }
 
-ReactDom.render(<Counter />, document.getElementById('root'))
+ReactDom.render(<Form />, document.getElementById('root'))
