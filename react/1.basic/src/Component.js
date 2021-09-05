@@ -21,7 +21,8 @@ class Updater {
     this.pendingStates.push(partialState)
     this.emitUpdate() // 触发更新
   }
-  emitUpdate() {
+  emitUpdate(nextProps) {
+    this.nextProps = nextProps
     if (updateQueue.isBatchingUpdate) { // 批量异步更新
       updateQueue.updaters.push(this) // 把更新器实例添加到队列
     } else {
@@ -29,9 +30,10 @@ class Updater {
     }
   }
   updateComponent() {
-    const { classInstance, pendingStates } = this
-    if (pendingStates.length > 0) { // 异步更新一次就能跑完pendingStates
-      shouldUpdate(classInstance, this.getState())
+    const { classInstance, nextProps, pendingStates } = this
+    // 只要有nextProps或者有setState传的对象，都要去更新属性或状态
+    if (nextProps || pendingStates.length > 0) { // 异步更新一次就能跑完pendingStates
+      shouldUpdate(classInstance, this.nextProps, this.getState())
     }
   }
   getState() {
@@ -48,9 +50,26 @@ class Updater {
   }
 }
 
-function shouldUpdate(classInstance, nextState) { // 将要更新的数据
-  classInstance.state = nextState
-  classInstance.forceUpdate() // 强制更新
+function shouldUpdate(classInstance, nextProps, nextState) { // 将要更新的数据，nextProps：新的属性对象，nextState：新的状态对象
+  let willUpdate = true // 组件是否要更新
+  // 类组件实例有shouldComponentUpdate函数，且函数执行返回false，willUpdate赋值为false
+  if (classInstance.shouldComponentUpdate && !classInstance.shouldComponentUpdate(nextProps, nextState)) {
+    willUpdate = false // 不更新组件
+  }
+  // 如果要更新组件，且有componentWillUpdate函数，就执行他
+  if (willUpdate && classInstance.componentWillUpdate) {
+    classInstance.componentWillUpdate()
+  }
+  if (nextProps) { // 不管要不要更新组件，只要有属性，都要更新
+    classInstance.nextProps = nextProps
+  }
+  classInstance.state = nextState // 不管要不要更新组件，都要更新状态
+
+  if (willUpdate) { // 要更新组件
+    classInstance.forceUpdate()
+  }
+  // classInstance.state = nextState
+  // classInstance.forceUpdate() // 强制更新
 }
 
 class Component {
@@ -72,6 +91,10 @@ class Component {
     compareTwoVdom(oldDOM.parentNode, oldRenderVdom, newRenderVdom) // 比较新旧虚拟dom，dom-diff
 
     this.oldRenderVdom = newRenderVdom // 更新上一次的虚拟dom
+
+    if (this.componentDidUpdate) { // 完成dom更新，执行componentDidUpdate
+      this.componentDidUpdate(this.props, this.state)
+    }
   }
 }
 

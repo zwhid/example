@@ -1,30 +1,53 @@
-import React from "./react";
-import ReactDom from "./react-dom";
+import React from "./react"
+import ReactDom from "./react-dom"
 
-function TextInput(props, forwardRef) { // 父组件传进来的 {current: null}
-  return <input ref={forwardRef} /> // {current: dom}
-}
-
-const ForwardedTextInput = React.forWardRef(TextInput)
-
-class Form extends React.Component {
+class Counter extends React.Component {
   constructor(props) {
     super(props)
-    this.inputRef = React.createRef() // { current: null }
+    this.state = { number: 0 }
+    console.log('Counter 1. constructor')
   }
-  getFocus = () => {
-    this.inputRef.current.focus() // { current: TextInput }
+  handleClick = () => {
+    this.setState({ number: this.state.number + 1 })
   }
-
+  componentWillMount() {
+    console.log('Counter 2. componentWillMount')
+  }
   render() {
+    console.log('Counter 3. render')
     return (
       <div>
-        {/* { $$typeof: REACT_FORWARD, render: TextInput, ref: { current: null }} */}
-        <ForwardedTextInput ref={this.inputRef} />
-        <button onClick={this.getFocus}>获取Input焦点</button>
+        <p>{this.state.number}</p>
+        <button onClick={this.handleClick}>点击增加</button>
       </div>
     )
   }
+  componentDidMount() {
+    console.log('Counter 4. componentDidMount')
+  }
+  shouldComponentUpdate(nextProps, nextState) {
+    console.log('Counter 5. shouldComponentUpdate')
+    return nextState.number % 2 === 0 // 奇数不更新，偶数更新
+  }
+  componentWillUpdate() {
+    console.log('Counter 6. componentWillUpdate')
+  }
+  componentDidUpdate() {
+    console.log('Counter 7. componentDidUpdate')
+  }
 }
 
-ReactDom.render(<Form />, document.getElementById('root'))
+ReactDom.render(<Counter />, document.getElementById('root'))
+
+/*
+Counter 1. constructor
+Counter 2. componentWillMount
+Counter 3. render
+Counter 4. componentDidMount
+Counter 5. shouldComponentUpdate
+-点击button-
+Counter 5. shouldComponentUpdate
+Counter 6. componentWillUpdate
+Counter 3. render
+Counter 7. componentDidUpdate
+*/

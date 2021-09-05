@@ -51,6 +51,7 @@ function mount(vdom, parentDOM) {
   let newDOM = createDOM(vdom)
   if (newDOM) {
     parentDOM.appendChild(newDOM)
+    if (newDOM._componentDidMount) newDOM._componentDidMount()
   }
 }
 
@@ -92,9 +93,16 @@ function mountClassComponent(vdom) { // 处理类组件
   let { type: ClassComponent, props, ref } = vdom
   let classInstance = new ClassComponent(props) // nwe类组件，返回实例
   if (ref) ref.current = classInstance // 如果类组件有ref属性，就把类组件的引用挂载到ref.current
+  if (classInstance.componentWillMount) { // 将要装载函数，写在render之前
+    classInstance.componentWillMount()
+  }
   let renderVdom = classInstance.render() // 运行render函数返回jsx=>babel自动转成js=>react.createElement转成vdom
   classInstance.oldRenderVdom = vdom.oldRenderVdom = renderVdom // 可能类组件嵌套函数组件
-  return createDOM(renderVdom)
+  let dom = createDOM(renderVdom)
+  if (classInstance.componentDidMount) { // 先把完成装载函数componentDidMount挂载到真实dom上，appendChild后执行
+    dom._componentDidMount = classInstance.componentDidMount.bind(classInstance)
+  }
+  return dom
 }
 function mountFunctionComponent(vdom) { // 处理函数组件
   let { type, props } = vdom
@@ -102,8 +110,7 @@ function mountFunctionComponent(vdom) { // 处理函数组件
   vdom.oldRenderVdom = renderVdom
   return createDOM(renderVdom)
 }
-function mountForwardComponent(vdom) {
-  console.log(vdom);
+function mountForwardComponent(vdom) { // 处理包装的函数组件
   let { type, props, ref } = vdom
   let renderVdom = type.render(props, ref) // TextInput(props, forwardRef) => {}
   vdom.oldRenderVdom = renderVdom
